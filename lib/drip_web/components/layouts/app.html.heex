@@ -1,0 +1,73 @@
+<div class="w-screen h-screen flex flex-col">
+<header class="px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
+    <div class="flex items-center gap-4">
+      <a href="/">
+        <img src={~p"/images/logo.svg"} width="36" />
+      </a>
+      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
+        Drip
+      </p>
+    </div>
+
+    <ul class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
+      <%= if @current_user do %>
+        <li class="text-[0.8125rem] leading-6 text-zinc-900">
+          {@current_user.email}
+        </li>
+        <li>
+          <.link
+            href={~p"/users/settings"}
+            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+          >
+            Settings
+          </.link>
+        </li>
+        <li>
+          <.link
+            href={~p"/users/log_out"}
+            method="delete"
+            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+          >
+            Log out
+          </.link>
+        </li>
+      <% else %>
+        <li>
+          <.link
+            href={~p"/users/register"}
+            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+          >
+            Register
+          </.link>
+        </li>
+        <li>
+          <.link
+            href={~p"/users/log_in"}
+            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+          >
+            Log in
+          </.link>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Server list: the narrow vertical bar with icons -->
+  <aside class="w-16 bg-gray-900 h-full overflow-y-auto">
+    <!-- ServerSidebar content here -->
+    <.server_sidebar module={DripWeb.Components.ServerSidebar} servers={@servers} />
+  </aside>
+
+  <!-- Channel list: second sidebar that changes with server/DMs -->
+  <aside class="w-60 bg-blue-800 h-full overflow-y-auto">
+    <!-- ChannelSidebar content here -->
+  </aside>
+  <main class="flex-1 bg-gray-200 overflow-y-auto">
+    {@inner_content}
+</main>
+  </div>
+
+
+</div>

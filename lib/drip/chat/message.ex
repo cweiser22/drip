@@ -1,0 +1,22 @@
+defmodule Drip.Chat.Message do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  schema "messages" do
+    field :body, :string
+    # field :sender_id, :id
+    # field :channel_id, :id
+
+    belongs_to :sender, Drip.Accounts.User, foreign_key: :sender_id
+    belongs_to :channel, Drip.Chat.Channel
+
+    timestamps(type: :utc_datetime)
+  end
+
+  @doc false
+  def changeset(message, attrs) do
+    message
+    |> cast(attrs, [:body])
+    |> validate_required([:body])
+  end
+end
