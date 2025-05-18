@@ -11,6 +11,7 @@ defmodule DripWeb.Layouts do
   use DripWeb, :html
 
   import DripWeb.Components.ServerSidebar
+  import DripWeb.Components.ChannelsSidebar
 
   embed_templates "layouts/*"
 end

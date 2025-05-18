@@ -13,8 +13,13 @@ defmodule Drip.Chat.Message do
     timestamps(type: :utc_datetime)
   end
 
-  @doc false
-  def changeset(message, attrs) do
+  def create_changeset(message, attrs) do
+    message
+    |> cast(attrs, [:body, :channel_id, :sender_id])
+    |> validate_required([:body, :channel_id])
+  end
+
+  def update_changeset(message, attrs) do
     message
     |> cast(attrs, [:body])
     |> validate_required([:body])

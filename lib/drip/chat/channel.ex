@@ -14,7 +14,13 @@ defmodule Drip.Chat.Channel do
   end
 
   @doc false
-  def changeset(channel, attrs) do
+  def create_changeset(channel, attrs) do
+    channel
+    |> cast(attrs, [:name, :server_id])
+    |> validate_required([:name, :server_id])
+  end
+
+  def update_changeset(channel, attrs) do
     channel
     |> cast(attrs, [:name])
     |> validate_required([:name])
