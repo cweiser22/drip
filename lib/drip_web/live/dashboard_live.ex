@@ -26,20 +26,47 @@ defmodule DripWeb.DashboardLive do
 
     current_channel = if length(current_server.channels) > 0 do Enum.at(current_server.channels, 0) |> Repo.preload([:messages]) else 0 end
 
-    {:ok, assign(socket, user: user, servers: servers, current_server: current_server,  current_channel: current_channel)}
+    messages = if current_channel.id != 0 do Chat.load_messages_for_channel(current_channel) else [] end
+
+    if connected?(socket), do: Phoenix.PubSub.subscribe(Drip.PubSub, "channel:#{current_channel.id}")
+
+    {:ok, assign(socket, user: user, servers: servers, current_server: current_server,  current_channel: current_channel, messages: messages)}
   end
+
+  def handle_info({:receive_message, message}, socket) do
+    {:noreply, update(socket, :messages, fn messages -> messages ++ [message] end)}
+  end
+
+
+  def handle_info({:send_message, %{"body" => body}}, socket) do
+    sender_id = socket.assigns.user.id
+    channel_id = socket.assigns.current_channel.id
+
+    with {:ok, message} <- Chat.create_message(%{"body" => body, "sender_id" => sender_id, "channel_id" => channel_id}) do
+      Phoenix.PubSub.broadcast(Drip.PubSub, "channel:#{channel_id}", {:receive_message, message})
+    end
+
+    {:noreply, assign(socket, :form, to_form(%Message{} |> Message.create_changeset(%{body: ""})))}
+  end
+
+
 
   def handle_event("select_server", %{"server_id" => server_id}, socket) do
     current_server = Chat.get_server(server_id) |> Repo.preload([:channels])
     current_channel = if length(current_server.channels) > 0 do Enum.at(current_server.channels, 0) |> Repo.preload([:messages]) else %Channel{id: 0} end
+    messages = Chat.load_messages_for_channel(current_channel)
 
-    # TODO: rewrite this correctly
-    {:noreply, assign(socket, current_server: current_server, current_channel: current_channel)}
+    {:noreply, assign(socket, current_server: current_server, current_channel: current_channel, messages: messages)}
   end
 
   def handle_event("select_channel", %{"channel_id" => channel_id}, socket) do
-    current_channel = Chat.get_channel(channel_id) |> Repo.preload([:messages])
-    {:noreply, assign(socket, current_channel: current_channel)}
+    old_channel = socket.assigns.current_channel
+    Phoenix.PubSub.unsubscribe(Drip.PubSub, "channel:#{old_channel.id}")
+    current_channel = Chat.get_channel(channel_id)
+    messages = Chat.load_messages_for_channel(current_channel)
+
+    Phoenix.PubSub.subscribe(Drip.PubSub, "channel:#{current_channel.id}")
+    {:noreply, assign(socket, current_channel: current_channel, messages: messages)}
   end
 
 
@@ -53,24 +80,22 @@ defmodule DripWeb.DashboardLive do
 
       <%= if @current_channel.id != 0 do %>
         <div class="flex flex-col h-full w-full justify-start">
-          <div class="p-4 border-b font-bold">
+          <!-- Channel name header -->
+          <div class="p-4 border-b font-bold ">
             #{@current_channel.name}
           </div>
-          <div class="bg-gray-700 flex-1">
 
-            <.conversation module={DripWeb.Components.Conversation} id="conversation" messages={@current_channel.messages} />
-
+          <!-- scrollable messages list -->
+          <div phx-hook="ScrollToBottom" class="bg-gray-700 flex-1 overflow-auto" id="conversation-scroll-container" >
+              <.conversation module={DripWeb.Components.Conversation} id="conversation" messages={@messages} />
           </div>
+
+          <!-- new message form -->
           <div class="bg-indigo-100 h-16">
-
-              <.live_component user={@user} current_channel={@current_channel} form={to_form(Message.create_changeset(%Message{}, %{}))} id="new-message-input" module={DripWeb.Components.NewMessage}></.live_component>
-
+              <.live_component messages={@messages} user={@user} current_channel={@current_channel} form={to_form(Message.create_changeset(%Message{}, %{}))} id="new-message-input" module={DripWeb.Components.NewMessage}></.live_component>
           </div>
         </div>
       <% end %>
-      Current server is {@current_server.id}
-      Current channel is {@current_channel.id}
-
       <% end %>
     """
   end

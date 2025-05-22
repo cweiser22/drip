@@ -42,7 +42,12 @@ defmodule Drip.Chat do
     |> Repo.insert()
   end
 
+  def load_messages_for_channel(channel) do
+    messages = (channel
+    |> Repo.preload(messages: from(m in Message, order_by: [asc: m.inserted_at]))).messages
+    Repo.preload(messages, [:sender])
 
+  end
 
   @spec update_message(any(), any()) :: none()
   @doc """

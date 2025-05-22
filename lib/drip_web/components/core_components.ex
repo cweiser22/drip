@@ -272,6 +272,7 @@ defmodule DripWeb.CoreComponents do
   attr :name, :any
   attr :label, :string, default: nil
   attr :value, :any
+  attr :container_classes, :string, default: "", doc: "classes to apply to the container div"
 
   attr :type, :string,
     default: "text",
@@ -309,7 +310,7 @@ defmodule DripWeb.CoreComponents do
       end)
 
     ~H"""
-    <div>
+    <div class={@container_classes}>
       <label class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
         <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
         <input
@@ -369,7 +370,7 @@ defmodule DripWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div>
+    <div class={@container_classes}>
       <.label for={@id}>{@label}</.label>
       <input
         type={@type}
