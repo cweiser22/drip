@@ -1,5 +1,6 @@
 defmodule DripWeb.UserSettingsLive do
   use DripWeb, :live_view
+  use DripWeb, :html
 
   alias Drip.Accounts
 
@@ -100,7 +101,7 @@ defmodule DripWeb.UserSettingsLive do
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
 
-    {:ok, socket}
+    {:ok, socket, layout: {DripWeb.Layouts, :minimal}}
   end
 
   def handle_event("validate_email", params, socket) do

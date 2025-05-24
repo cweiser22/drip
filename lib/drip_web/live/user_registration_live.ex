@@ -1,5 +1,6 @@
 defmodule DripWeb.UserRegistrationLive do
   use DripWeb, :live_view
+  use DripWeb, :html
 
   alias Drip.Accounts
   alias Drip.Accounts.User
@@ -50,7 +51,7 @@ defmodule DripWeb.UserRegistrationLive do
       |> assign(trigger_submit: false, check_errors: false)
       |> assign_form(changeset)
 
-    {:ok, socket, temporary_assigns: [form: nil]}
+    {:ok, socket, temporary_assigns: [form: nil], layout: {DripWeb.Layouts, :minimal}}
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do

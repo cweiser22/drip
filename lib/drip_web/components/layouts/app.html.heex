@@ -1,82 +1,117 @@
 <!-- container div for layout -->
 <div class="w-screen h-screen flex flex-col overflow-hidden">
-
   <!-- top appbar -->
-  <header class="px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between py-3 text-sm">
-      <div class="flex items-center gap-4">
-        <a href="/">
-          <img src={~p"/images/logo.svg"} width="36" />
-        </a>
-        <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-          Drip
-        </p>
-      </div>
+  <!--<header class="px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between py-3 text-sm">
+  <div class="flex items-center gap-4">
+  <a href="/">
+  <img src={~p"/images/logo.svg"} width="36" />
+  </a>
+  <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
+  Drip
+  </p>
+  </div>
 
-      <ul class="flex items-center gap-4 font-semibold leading-6 text-zinc-100">
-        <%= if @current_user do %>
-          <li class="text-[0.8125rem] leading-6 text-zinc-100">
-            {@current_user.email}
-          </li>
-          <li>
-            <.link
-              href={~p"/users/settings"}
-              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
-            >
-              Settings
-            </.link>
-          </li>
-          <li>
-            <.link
-              href={~p"/users/log_out"}
-              method="delete"
-              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
-            >
-              Log out
-            </.link>
-          </li>
-        <% else %>
-          <li>
-            <.link
-              href={~p"/users/register"}
-              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
-            >
-              Register
-            </.link>
-          </li>
-          <li>
-            <.link
-              href={~p"/users/log_in"}
-              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
-            >
-              Log in
-            </.link>
-          </li>
-        <% end %>
-      </ul>
-    </div>
-  </header>
+  <ul class="flex items-center gap-4 font-semibold leading-6 text-zinc-100">
+  <%= if @current_user do %>
+    <li class="text-[0.8125rem] leading-6 text-zinc-100">
+    {@current_user.email}
+    </li>
+    <li>
+    <.link
+    href={~p"/users/settings"}
+    class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+    >
+    Settings
+    </.link>
+    </li>
+    <li>
+    <.link
+    href={~p"/users/log_out"}
+    method="delete"
+    class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+    >
+    Log out
+    </.link>
+    </li>
+  <% else %>
+    <li>
+    <.link
+    href={~p"/users/register"}
+    class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+    >
+    Register
+    </.link>
+    </li>
+    <li>
+    <.link
+    href={~p"/users/log_in"}
+    class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+    >
+    Log in
+    </.link>
+    </li>
+  <% end %>
+  </ul>
+  </div>
+  </header>-->
 
   <!-- hold content that's being set horizontally -->
   <div class="flex flex-row flex-1 text-zinc-100 overflow-hidden">
     <!-- Server list: the narrow vertical bar with icons -->
-    <%= if @current_user do %>
-    <aside class="w-16 bg-gray-800 h-full max-h-full">
-      <!-- ServerSidebar content here -->
-      <.server_sidebar module={DripWeb.Components.ServerSidebar} servers={@servers} current_server={@current_server}/>
+
+    <aside class="w-96 flex flex-col h-full">
+      <div class="flex flex-row flex-1">
+        <%= if @servers do %>
+          <nav class="w-20 bg-gray-800 h-full max-h-full">
+            <!-- ServerSidebar content here -->
+            <.server_sidebar
+              new_server_modal_open={false}
+              id="server-sidebar"
+              module={DripWeb.Components.ServerSidebar}
+              servers={@servers}
+              current_server={@current_server}
+            />
+          </nav>
+        <% end %>
+
+        <%= if @servers do %>
+          
+<!-- Channel list: second sidebar that changes with server/DMs -->
+          <nav class="flex-1 h-full max-h-full bg-gray-900">
+            <!-- ChannelSidebar content here -->
+            <.channels_sidebar
+              id="channels-sidebar"
+              module={DripWeb.Components.ChannelsSidebar}
+              current_server={@current_server}
+              current_channel={@current_channel}
+            />
+          </nav>
+        <% end %>
+      </div>
+      <div class="h-16 bg-teal-400 w-full flex flex-row items-center p-2">
+        <img
+          class="inline-block size-6 rounded-full ring-1 w-10 h-10"
+          src="https://gravatar.com/avatar/350845384504?d=identicon&s=200"
+        />
+        <div class="ml-2">
+          <h4 class="text-xs font-bold text-zinc-300 ">{@current_user.email}</h4>
+          <h6 class="text-xs">Online</h6>
+        </div>
+        <div class="flex-1"></div>
+        <div class="space-x-1">
+          <a class="btn" href="/users/log_out" title="Log out">
+            <.icon name="hero-arrow-left-start-on-rectangle" />
+          </a>
+          <a class="btn" href="/users/settings" title="Profile settings">
+            <.icon name="hero-cog-6-tooth" />
+          </a>
+        </div>
+      </div>
     </aside>
 
-    <!-- Channel list: second sidebar that changes with server/DMs -->
-    <aside class="w-60 h-full max-h-full bg-gray-900">
-      <!-- ChannelSidebar content here -->
-      <.channels_sidebar module={DripWeb.Components.ChannelsSidebar} current_server={@current_server} />
-    </aside>
-
-    <% end %>
     <main class="flex-1 bg-gray-800">
       {@inner_content}
     </main>
   </div>
-
-
 </div>

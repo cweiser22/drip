@@ -1,0 +1,70 @@
+<!-- container div for layout -->
+<div class="w-screen h-screen flex flex-col overflow-hidden">
+
+  <!-- top appbar -->
+  <header class="px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between py-3 text-sm">
+      <div class="flex items-center gap-4">
+        <a href="/">
+          <img src={~p"/images/logo.svg"} width="36" />
+        </a>
+        <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
+          Drip
+        </p>
+      </div>
+
+      <ul class="flex items-center gap-4 font-semibold leading-6 text-zinc-100">
+        <%= if @current_user do %>
+          <li class="text-[0.8125rem] leading-6 text-zinc-100">
+            {@current_user.email}
+          </li>
+          <li>
+            <.link
+              href={~p"/users/settings"}
+              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+            >
+              Settings
+            </.link>
+          </li>
+          <li>
+            <.link
+              href={~p"/users/log_out"}
+              method="delete"
+              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+            >
+              Log out
+            </.link>
+          </li>
+        <% else %>
+          <li>
+            <.link
+              href={~p"/users/register"}
+              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+            >
+              Register
+            </.link>
+          </li>
+          <li>
+            <.link
+              href={~p"/users/log_in"}
+              class="text-[0.8125rem] leading-6 text-zinc-100 font-semibold hover:text-zinc-200"
+            >
+              Log in
+            </.link>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </header>
+
+  <!-- hold content that's being set horizontally -->
+  <div class="flex flex-row flex-1 text-zinc-100 overflow-hidden">
+   
+  
+    <main class="flex-1 bg-gray-800">
+      {@inner_content}
+    </main>
+  </div>
+
+
+</div>

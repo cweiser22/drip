@@ -59,6 +59,7 @@ defmodule DripWeb do
     end
   end
 
+  @spec live_component() :: {:__block__, [], [...]}
   def live_component do
     quote do
       use Phoenix.LiveComponent

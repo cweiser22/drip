@@ -35,9 +35,13 @@ defmodule DripWeb.UserLoginLive do
     """
   end
 
+  @spec mount(any(), any(), any()) ::
+          {:ok, any(), [{:layout, {any(), any()}} | {:temporary_assigns, [...]}, ...]}
   def mount(_params, _session, socket) do
     email = Phoenix.Flash.get(socket.assigns.flash, :email)
     form = to_form(%{"email" => email}, as: "user")
-    {:ok, assign(socket, form: form), temporary_assigns: [form: form]}
+
+    {:ok, socket |> assign(form: form),
+     layout: {DripWeb.Layouts, :minimal}, temporary_assigns: [form: form]}
   end
 end

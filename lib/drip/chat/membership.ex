@@ -11,9 +11,9 @@ defmodule Drip.Chat.Membership do
   end
 
   @doc false
-  def changeset(membership, attrs) do
+  def create_changeset(membership, attrs) do
     membership
-    |> cast(attrs, [])
+    |> cast(attrs, [:user_id, :server_id])
     |> validate_required([])
   end
 end
