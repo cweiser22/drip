@@ -1,5 +1,6 @@
 defmodule DripWeb.Components.ServerSidebar do
   use Phoenix.LiveComponent
+  alias Drip.Accounts.User
   use DripWeb, :html
 
   def update(assigns, socket) do
@@ -27,9 +28,15 @@ defmodule DripWeb.Components.ServerSidebar do
     """
   end
 
+  defmodule MessageGroup do
+    defstruct messages: [], sender: %User{id: 0}
+  end
+
+  
+
   def server_sidebar(assigns) do
     ~H"""
-    <div class="w-20 flex flex-col items-center justify-start h-full bg-grey-900">
+    <div class="w-20 flex flex-col items-center justify-start h-full bg-gray-900">
       <ul class="flex list-none flex-col flex-1 items-center justify-start w-full mt-4">
         <%= for server <- @servers do %>
           <.server_item current_server={@current_server} server={server}></.server_item>

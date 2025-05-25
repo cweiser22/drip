@@ -128,6 +128,7 @@ defmodule DripWeb.DashboardLive do
           >
             <.conversation
               module={DripWeb.Components.Conversation}
+              current_user={@current_user}
               id="conversation"
               messages={@messages}
             />
