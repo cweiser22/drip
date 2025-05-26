@@ -65,7 +65,7 @@
         <%= if @servers do %>
           <nav class="w-20 bg-gray-800 h-full max-h-full">
             <!-- ServerSidebar content here -->
-            <.server_sidebar
+            <.live_component
               new_server_modal_open={false}
               id="server-sidebar"
               module={DripWeb.Components.ServerSidebar}

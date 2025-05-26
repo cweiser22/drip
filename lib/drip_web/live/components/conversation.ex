@@ -21,7 +21,7 @@ defmodule DripWeb.Components.Conversation do
       <div class="flex-1 px-4">
         <h4 class="text-xs font-bold mb-1 text-zinc-300">{Enum.at(@group, 0).sender.email}</h4>
         <%= for message <- @group do %>
-          <h3>{message.body}</h3>
+          <h3 class="mb-1">{message.body}</h3>
         <% end %>
       </div>
     </div>
