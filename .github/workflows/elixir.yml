@@ -49,10 +49,10 @@ jobs:
     - name: Set up SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_drip_gh
+        chmod 600 ~/.ssh/id_drip_gh
         ssh-keyscan -H 64.227.110.128 >> ~/.ssh/known_hosts
     - name: Transfer files to staging server
-      run: scp -r _build/prod/rel root@64.227.110.128:/etc/drip/
+      run: scp -i ~/.ssh/id_drip_gh -r _build/prod/rel root@64.227.110.128:/etc/drip/
 
 
