@@ -18,7 +18,7 @@ jobs:
     #- name: Run tests
     #  run: mix test
   deploy:
-    environment: stage
+    environment: staging
     name: Build and deploy to staging
     runs-on: ubuntu-latest
 
