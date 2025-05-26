@@ -27,7 +27,7 @@ defmodule DripWeb.Components.NewMessage do
             field={@form[:body]}
             autocomplete="off"
             type="text"
-            class="bg-gray-50 border flex-1 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 "
+            class="bg-gray-850 border flex-1 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 "
             placeholder="New message..."
             required
           />

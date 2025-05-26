@@ -6,8 +6,8 @@ defmodule DripWeb.Components.ChannelsSidebar do
     ~H"""
     <div class="w-full h-full bg-gray-900">
       <%= if @current_server do %>
-        <div class="p-3 border-b font-bold">
-          {@current_server.name}
+        <div class="flex flex-col justify-center p-4 border-b font-bold h-14">
+          <h3 class="text-lg">{@current_server.name}</h3>
         </div>
         <%= if @current_server.channels do %>
           <ul class="p-2">

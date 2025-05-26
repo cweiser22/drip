@@ -3,29 +3,11 @@ defmodule DripWeb.Components.ServerSidebar do
   alias Drip.Accounts.User
   use DripWeb, :html
 
-  def mount(socket) do
-    {:ok, assign(socket, new_server_modal_open: false)}
-  end
-
-  def handle_event("open_modal", %{"value" => ""}, socket) do
-    IO.inspect(socket.assigns.new_server_modal_open)
-    socket = socket |> assign(new_server_modal_open: true)
-    IO.inspect(socket.assigns.new_server_modal_open)
-    {:noreply, socket}
-  end
-
-  def handle_event("close_modal", %{"value" => ""}, socket) do
-    IO.inspect(socket.assigns.new_server_modal_open)
-    socket = socket |> assign(new_server_modal_open: false)
-    IO.inspect(socket.assigns.new_server_modal_open)
-    {:noreply, socket}
-  end
-
   def server_item(assigns) do
     ~H"""
-    <li class={" aspect-square flex flex-col items-center justify-center list-none w-full " <> if @current_server.id == @server.id, do: "border-l-4", else: "pl-1"}>
+    <li class={"py-2 flex flex-col items-center justify-center list-none w-full " <> if @current_server.id == @server.id, do: "border-l-4 box-border", else: ""}>
       <button
-        class="w-11 h-11 rounded-xl overflow-hidden bg-white"
+        class="w-10 h-10 rounded-xl overflow-hidden bg-white"
         phx-click="select_server"
         phx-value-server_id={@server.id}
       >
@@ -35,26 +17,29 @@ defmodule DripWeb.Components.ServerSidebar do
     """
   end
 
-  defmodule MessageGroup do
-    defstruct messages: [], sender: %User{id: 0}
+  def divider(assigns) do
+    ~H"""
+    <div class="my-2 w-full px-4">
+      <div class="w-full flex items-center">
+        <div class="w-full border-t border-gray-300"></div>
+      </div>
+    </div>
+    """
   end
 
   def render(assigns) do
     ~H"""
-    <div class="w-20 flex flex-col items-center justify-start h-full bg-gray-900">
-      <ul class="flex list-none flex-col flex-1 items-center justify-start w-full mt-4">
+    <div class="w-18 flex flex-col items-center justify-start h-full bg-gray-850 border-white border-r box-border">
+      <ul class="space-y-1 flex list-none flex-col flex-1 items-center justify-start w-full mt-4">
         <%= for server <- @servers do %>
           <.server_item current_server={@current_server} server={server}></.server_item>
         <% end %>
-        <li class="aspect-square flex flex-col items-center justify-center list-none w-full pl-1">
-          <button
-            class="w-11 h-11 rounded-xl overflow-hidden "
-            phx-click="open_modal"
-            phx-target={@myself}
-          >
+        <.divider></.divider>
+        <li class="flex flex-col items-center justify-center list-none w-full pl-1">
+          <button class="w-10 h-10 rounded-xl overflow-hidden " phx-click="open_modal">
             <.icon name="hero-plus" />
           </button>
-          <.modal show={true} id="new-server-modal" on_cancel={JS.push("close_modal")}>
+          <.modal id="new-server-modal" show={@show_new_server_modal}>
             <div>
               This is the modal body.
             </div>

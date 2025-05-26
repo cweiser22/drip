@@ -66,8 +66,8 @@
           <nav class="w-20 bg-gray-800 h-full max-h-full">
             <!-- ServerSidebar content here -->
             <.live_component
-              new_server_modal_open={false}
               id="server-sidebar"
+              show_new_server_modal={@show_new_server_modal}
               module={DripWeb.Components.ServerSidebar}
               servers={@servers}
               current_server={@current_server}
@@ -110,7 +110,7 @@
       </div>
     </aside>
 
-    <main class="flex-1 bg-gray-800">
+    <main class="flex-1">
       {@inner_content}
     </main>
   </div>

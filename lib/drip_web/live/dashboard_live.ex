@@ -48,7 +48,8 @@ defmodule DripWeb.DashboardLive do
        servers: servers,
        current_server: current_server,
        current_channel: current_channel,
-       messages: messages
+       messages: messages,
+       show_new_server_modal: false
      )}
   end
 
@@ -109,6 +110,15 @@ defmodule DripWeb.DashboardLive do
     {:noreply, assign(socket, current_channel: current_channel, messages: messages)}
   end
 
+  def handle_event("open_modal", %{"value" => ""}, socket) do
+    IO.puts("open modal")
+    {:noreply, assign(socket, show_new_server_modal: true)}
+  end
+
+  def handle_event("close_modal", %{"value" => ""}, socket) do
+    {:noreply, assign(socket, show_new_server_modal: false)}
+  end
+
   @spec render(any()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     ~H"""
@@ -116,14 +126,14 @@ defmodule DripWeb.DashboardLive do
       <%= if @current_channel.id != 0 do %>
         <div class="flex flex-col h-full w-full justify-start">
           <!-- Channel name header -->
-          <div class="p-4 border-b font-bold ">
-            #{@current_channel.name}
+          <div class="flex flex-col justify-center p-4 border-b font-bold h-14 border-b font-bold bg-gray-800">
+            <h4 class="text-sm">#{@current_channel.name}</h4>
           </div>
           
     <!-- scrollable messages list -->
           <div
             phx-hook="ScrollToBottom"
-            class="bg-gray-700 flex-1 overflow-auto"
+            class="bg-neutral-100 dark:bg-neutral-800 text-zinc-900 dark:text-zinc-200 flex-1 overflow-auto"
             id="conversation-scroll-container"
           >
             <.conversation
@@ -135,7 +145,7 @@ defmodule DripWeb.DashboardLive do
           </div>
           
     <!-- new message form -->
-          <div class="bg-indigo-100 h-16">
+          <div class="dark:bg-gray-800 bg-gray-800">
             <.live_component
               messages={@messages}
               user={@user}
