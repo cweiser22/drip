@@ -19,7 +19,9 @@ defmodule DripWeb.Components.Conversation do
     <div class="w-full flex flex-row py-4 px-4">
       <img class="inline-block size-6 rounded-full ring-1 w-11 h-11" src={icon_url} />
       <div class="flex-1 px-4">
-        <h4 class="text-xs font-bold mb-1 text-zinc-300">{Enum.at(@group, 0).sender.email}</h4>
+        <h4 class="text-cyan-700 dark:text-cyan-200 text-xs font-bold mb-1 text-zinc-300">
+          {Enum.at(@group, 0).sender.email}
+        </h4>
         <%= for message <- @group do %>
           <h3 class="mb-1">{message.body}</h3>
         <% end %>
@@ -65,7 +67,7 @@ defmodule DripWeb.Components.Conversation do
     assigns = assign(assigns, :message_groups, message_groups)
 
     ~H"""
-    <div class="text-white bg-gray-700 h-full space-y-2">
+    <div class="dark:text-white text-zinc-900 bg-neutral-100 dark:bg-neutral-800 h-full space-y-2">
       <%= for group <- @message_groups do %>
         <.message_group group={group} current_user={@current_user} />
       <% end %>

@@ -19,8 +19,6 @@ defmodule DripWeb.Router do
 
   scope "/", DripWeb do
     pipe_through :browser
-
-    get "/", PageController, :home
   end
 
   # Other scopes may use custom stacks.
@@ -69,7 +67,7 @@ defmodule DripWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 
-      live "/dashboard", DashboardLive
+      live "/", DashboardLive
     end
   end
 

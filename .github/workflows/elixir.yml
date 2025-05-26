@@ -53,6 +53,9 @@ jobs:
         chmod 600 ~/.ssh/id_drip_gh
         ssh-keyscan -H 64.227.110.128 >> ~/.ssh/known_hosts
     - name: Transfer files to staging server
-      run: scp -i ~/.ssh/id_drip_gh -r _build/prod/rel root@64.227.110.128:/etc/drip/
+      run: scp -i ~/.ssh/id_drip_gh -r _build/prod/rel root@64.227.110.128:/opt/drip/
+    - name: Restart staging server
+      run: |
+        ssh -i ~/.ssh/id_drip_gh 'systemctl restart drip'
 
 
