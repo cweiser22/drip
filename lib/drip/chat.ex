@@ -20,7 +20,7 @@ defmodule Drip.Chat do
       %Message{}
 
   """
-  def get_message!(id), do: raise("TODO")
+  def get_message!(_id), do: raise("TODO")
 
   @spec get_message!(any()) :: none()
   @doc """
@@ -62,7 +62,7 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def update_message(%Message{} = message, attrs) do
+  def update_message(%Message{} = _message, _attrs) do
     raise "TODO"
   end
 
@@ -78,7 +78,7 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def delete_message(%Message{} = message) do
+  def delete_message(%Message{} = _message) do
     raise "TODO"
   end
 
@@ -91,7 +91,7 @@ defmodule Drip.Chat do
       %Todo{...}
 
   """
-  def change_message(%Message{} = message, _attrs \\ %{}) do
+  def change_message(%Message{} = _message, _attrs \\ %{}) do
     raise "TODO"
   end
 
@@ -190,19 +190,6 @@ defmodule Drip.Chat do
   alias Drip.Chat.Membership
 
   @doc """
-  Returns the list of servers.
-
-  ## Examples
-
-      iex> list_servers()
-      [%Membership{}, ...]
-
-  """
-  def list_servers do
-    raise "TODO"
-  end
-
-  @doc """
   Gets a single membership.
 
   Raises if the Membership does not exist.
@@ -213,7 +200,7 @@ defmodule Drip.Chat do
       %Membership{}
 
   """
-  def get_membership!(id), do: raise("TODO")
+  def get_membership!(_id), do: raise("TODO")
 
   @doc """
   Creates a membership.
@@ -245,7 +232,7 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def update_membership(%Membership{} = membership, _attrs) do
+  def update_membership(%Membership{} = _membership, _attrs) do
     raise "TODO"
   end
 
@@ -261,7 +248,7 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def delete_membership(%Membership{} = membership) do
+  def delete_membership(%Membership{} = _membership) do
     raise "TODO"
   end
 
@@ -274,24 +261,11 @@ defmodule Drip.Chat do
       %Todo{...}
 
   """
-  def change_membership(%Membership{} = membership, _attrs \\ %{}) do
+  def change_membership(%Membership{} = _membership, _attrs \\ %{}) do
     raise "TODO"
   end
 
   alias Drip.Chat.Channel
-
-  @doc """
-  Returns the list of servers.
-
-  ## Examples
-
-      iex> list_servers()
-      [%Channel{}, ...]
-
-  """
-  def list_servers do
-    raise "TODO"
-  end
 
   @doc """
   Gets a single channel.
@@ -320,7 +294,7 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def add_channel(attrs \\ %{}) do
+  def create_channel(attrs \\ %{}) do
     %Channel{}
     |> Channel.create_changeset(attrs)
     |> Repo.insert()
@@ -339,8 +313,10 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def update_channel(%Channel{} = channel, _attrs) do
-    raise "TODO"
+  def update_channel(%Channel{} = channel, attrs) do
+    channel
+    |> Channel.update_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -368,7 +344,7 @@ defmodule Drip.Chat do
       %Todo{...}
 
   """
-  def change_channel(%Channel{} = channel, _attrs \\ %{}) do
-    raise "TODO"
+  def change_channel(%Channel{} = channel, attrs \\ %{}) do
+    Channel.create_changeset(channel, attrs)
   end
 end
