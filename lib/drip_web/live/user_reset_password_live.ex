@@ -50,7 +50,7 @@ defmodule DripWeb.UserResetPasswordLive do
           %{}
       end
 
-    {:ok, assign_form(socket, form_source), temporary_assigns: [form: nil]}
+    {:ok, assign_form(socket, form_source), temporary_assigns: [form: nil], layout: {DripWeb.Layouts, :minimal},}
   end
 
   # Do not log in the user after reset password to avoid a

@@ -5,7 +5,7 @@ defmodule DripWeb.DashboardLive do
   alias Drip.Chat.Message
   alias Drip.Repo
   use DripWeb, :live_view
-  import DripWeb.Components.NewMessage
+
   import DripWeb.Components.Conversation
 
   alias Drip.Accounts
@@ -136,7 +136,7 @@ defmodule DripWeb.DashboardLive do
             class="bg-neutral-100 dark:bg-neutral-800 text-zinc-900 dark:text-zinc-200 flex-1 overflow-auto"
             id="conversation-scroll-container"
           >
-            <.conversation
+            <.live_component
               module={DripWeb.Components.Conversation}
               current_user={@current_user}
               id="conversation"

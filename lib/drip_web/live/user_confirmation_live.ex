@@ -25,7 +25,7 @@ defmodule DripWeb.UserConfirmationLive do
 
   def mount(%{"token" => token}, _session, socket) do
     form = to_form(%{"token" => token}, as: "user")
-    {:ok, assign(socket, form: form), temporary_assigns: [form: nil]}
+    {:ok, assign(socket, form: form), temporary_assigns: [form: nil], layout: {DripWeb.Layouts, :minimal},}
   end
 
   # Do not log in the user after confirmation to avoid a

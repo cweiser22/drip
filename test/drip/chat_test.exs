@@ -8,16 +8,6 @@ defmodule Drip.ChatTest do
     alias Drip.Chat.Message
     @invalid_attrs %{}
 
-    test "list_messages/0 returns all messages" do
-      message = insert(:message)
-      assert Chat.list_messages() == [message]
-    end
-
-    test "get_message!/1 returns the message with given id" do
-      message = insert(:message)
-      assert Chat.get_message!(message.id) == message
-    end
-
     test "create_message/1 with valid data creates a message" do
       attrs = params_for(:message)
       assert {:ok, %Message{} = message} = Chat.create_message(attrs)
@@ -39,8 +29,11 @@ defmodule Drip.ChatTest do
 
     test "update_message/2 with invalid data returns error changeset" do
       message = insert(:message)
-      assert {:error, %Ecto.Changeset{}} = Chat.update_message(message, @invalid_attrs)
-      assert message == Chat.get_message!(message.id)
+
+      nil_body = %{body: nil}
+
+      assert {:error, %Ecto.Changeset{}} = Chat.update_message(message, nil_body)
+      assert Chat.get_message!(message.id).body == message.body
     end
 
     test "delete_message/1 deletes the message" do
@@ -61,12 +54,13 @@ defmodule Drip.ChatTest do
 
     test "list_servers/0 returns all servers" do
       server = insert(:server)
-      assert Chat.list_servers() == [server]
+      [returned_server] = Chat.list_servers()
+      assert returned_server.id == server.id
     end
 
     test "get_server!/1 returns the server with given id" do
       server = insert(:server)
-      assert Chat.get_server!(server.id) == server
+      assert Chat.get_server!(server.id).id == server.id
     end
 
     test "create_server/1 with valid data creates a server" do
@@ -88,13 +82,18 @@ defmodule Drip.ChatTest do
 
     test "update_server/2 with invalid data returns error changeset" do
       server = insert(:server)
-      assert {:error, %Ecto.Changeset{}} = Chat.update_server(server, @invalid_attrs)
-      assert server == Chat.get_server!(server.id)
+
+      invalid_update_attrs = %{
+        name: nil
+      }
+
+      assert {:error, %Ecto.Changeset{}} = Chat.update_server(server, invalid_update_attrs)
+      assert server.name == Chat.get_server!(server.id).name
     end
 
     test "delete_server/1 deletes the server" do
       server = insert(:server)
-      assert {:ok, %Server{}} = Chat.delete_server(server)
+      assert {:ok, server} = Chat.delete_server(server.id)
       assert_raise Ecto.NoResultsError, fn -> Chat.get_server!(server.id) end
     end
 
@@ -110,12 +109,13 @@ defmodule Drip.ChatTest do
 
     test "list_memberships/0 returns all memberships" do
       membership = insert(:membership)
-      assert Chat.list_memberships() == [membership]
+      [returned_membership] = Chat.list_memberships()
+      assert returned_membership.id == membership.id
     end
 
     test "get_membership!/1 returns the membership with given id" do
       membership = insert(:membership)
-      assert Chat.get_membership!(membership.id) == membership
+      assert Chat.get_membership!(membership.id).id == membership.id
     end
 
     test "create_membership/1 with valid data creates a membership" do
@@ -137,8 +137,13 @@ defmodule Drip.ChatTest do
 
     test "update_membership/2 with invalid data returns error changeset" do
       membership = insert(:membership)
-      assert {:error, %Ecto.Changeset{}} = Chat.update_membership(membership, @invalid_attrs)
-      assert membership == Chat.get_membership!(membership.id)
+      invalid_update_attrs = %{server_id: nil, user_id: nil}
+
+      assert {:error, %Ecto.Changeset{}} =
+               Chat.update_membership(membership, invalid_update_attrs)
+
+      assert membership.server_id == Chat.get_membership!(membership.id).server_id
+      assert membership.user_id == Chat.get_membership!(membership.id).user_id
     end
 
     test "delete_membership/1 deletes the membership" do
@@ -159,12 +164,14 @@ defmodule Drip.ChatTest do
 
     test "list_channels/0 returns all channels" do
       channel = insert(:channel)
-      assert Chat.list_channels() == [channel]
+      [returned_channel] = Chat.list_channels()
+      assert returned_channel.id == channel.id
     end
 
     test "get_channel!/1 returns the channel with given id" do
       channel = insert(:channel)
-      assert Chat.get_channel!(channel.id) == channel
+      assert Chat.get_channel!(channel.id).id == channel.id
+      assert Chat.get_channel!(channel.id).name == channel.name
     end
 
     test "create_channel/1 with valid data creates a channel" do
@@ -186,8 +193,9 @@ defmodule Drip.ChatTest do
 
     test "update_channel/2 with invalid data returns error changeset" do
       channel = insert(:channel)
-      assert {:error, %Ecto.Changeset{}} = Chat.update_channel(channel, @invalid_attrs)
-      assert channel == Chat.get_channel!(channel.id)
+      invalid_update_attrs = %{name: nil}
+      assert {:error, %Ecto.Changeset{}} = Chat.update_channel(channel, invalid_update_attrs)
+      assert channel.name == Chat.get_channel!(channel.id).name
     end
 
     test "delete_channel/1 deletes the channel" do

@@ -3,7 +3,6 @@ defmodule Drip.Chat.Membership do
   import Ecto.Changeset
 
   schema "memberships" do
-
     belongs_to :user, Drip.Accounts.User
     belongs_to :server, Drip.Chat.Server
 
@@ -14,6 +13,6 @@ defmodule Drip.Chat.Membership do
   def create_changeset(membership, attrs) do
     membership
     |> cast(attrs, [:user_id, :server_id])
-    |> validate_required([])
+    |> validate_required([:user_id, :server_id])
   end
 end
