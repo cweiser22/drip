@@ -93,7 +93,7 @@ jobs:
         ssh-keyscan -H 64.227.110.128 >> ~/.ssh/known_hosts
     - name: Restart staging server
       run: |
-        ssh -i ~/.ssh/id_drip_gh 'systemctl stop drip'
+        ssh -i ~/.ssh/id_drip_gh root@64.227.110.128 'systemctl stop drip'
     - name: Transfer files to staging server
       run: scp -i ~/.ssh/id_drip_gh -r _build/prod/rel root@64.227.110.128:/opt/drip/
     - name: Restart staging server
