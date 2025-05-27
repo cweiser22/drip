@@ -6,8 +6,6 @@ defmodule DripWeb.DashboardLive do
   alias Drip.Repo
   use DripWeb, :live_view
 
-  import DripWeb.Components.Conversation
-
   alias Drip.Accounts
 
   def switch_channel(old_channel_id, new_channel_id) do
@@ -129,7 +127,7 @@ defmodule DripWeb.DashboardLive do
           <div class="flex flex-col justify-center p-4 border-b font-bold h-14 border-b font-bold bg-gray-800">
             <h4 class="text-sm">#{@current_channel.name}</h4>
           </div>
-          
+
     <!-- scrollable messages list -->
           <div
             phx-hook="ScrollToBottom"
@@ -143,7 +141,7 @@ defmodule DripWeb.DashboardLive do
               messages={@messages}
             />
           </div>
-          
+
     <!-- new message form -->
           <div class="dark:bg-gray-800 bg-gray-800">
             <.live_component

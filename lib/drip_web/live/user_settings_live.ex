@@ -133,6 +133,7 @@ defmodule DripWeb.UserSettingsLive do
 
       {:error, changeset} ->
         {:noreply, assign(socket, :email_form, to_form(Map.put(changeset, :action, :insert)))}
+
     end
   end
 
