@@ -58,6 +58,7 @@ jobs:
     #  run: mix test
   deploy:
     needs: test
+    if: github.event_name == 'push'
     environment: staging
     name: Build and deploy to staging
     runs-on: ubuntu-latest
@@ -78,6 +79,8 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+    - name: Install dependencies
+      run: mix deps.get --only=prod
     - name: Deploy Assets
       run: MIX_ENV=prod mix assets.deploy
     - name: Release
