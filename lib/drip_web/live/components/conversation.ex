@@ -12,12 +12,17 @@ defmodule DripWeb.Components.Conversation do
     "https://gravatar.com/avatar/#{hash}?d=identicon&s=200"
   end
 
-  def message_group(assigns) do
-    icon_url = get_icon_url(Enum.at(assigns.group, 0).sender.email)
+  def get_icon_url_for_group(group) do
+    get_icon_url(Enum.at(group, 0).sender.email)
+  end
 
+  def message_group(assigns) do
     ~H"""
     <div class="w-full flex flex-row py-4 px-4">
-      <img class="inline-block size-6 rounded-full ring-1 w-11 h-11" src={icon_url} />
+      <img
+        class="inline-block size-6 rounded-full ring-1 w-11 h-11"
+        src={get_icon_url_for_group(@group)}
+      />
       <div class="flex-1 px-4">
         <h4 class="text-cyan-700 dark:text-cyan-200 text-xs font-bold mb-1 text-zinc-300">
           {Enum.at(@group, 0).sender.email}
@@ -62,7 +67,7 @@ defmodule DripWeb.Components.Conversation do
     """
   end
 
-  def conversation(assigns) do
+  def render(assigns) do
     message_groups = group_messages(assigns.messages)
     assigns = assign(assigns, :message_groups, message_groups)
 

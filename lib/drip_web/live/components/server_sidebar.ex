@@ -1,6 +1,6 @@
 defmodule DripWeb.Components.ServerSidebar do
   use Phoenix.LiveComponent
-  alias Drip.Accounts.User
+
   use DripWeb, :html
 
   def server_item(assigns) do

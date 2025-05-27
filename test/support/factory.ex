@@ -11,35 +11,50 @@ defmodule Drip.Factory do
 
   # Server factory
   def server_factory do
+    owner = insert(:user)
+
     %Drip.Chat.Server{
       name: sequence(:server_name, &"Server ##{&1}"),
       icon_url: Faker.Avatar.image_url(),
-      owner: build(:user)
+      owner: owner,
+      owner_id: owner.id,
+      memberships: []
     }
   end
 
   # Channel factory
   def channel_factory do
+    server = insert(:server)
+
     %Drip.Chat.Channel{
       name: sequence(:channel_name, &"general-#{&1}"),
-      server: build(:server)
+      server: server,
+      server_id: server.id
     }
   end
 
   # Message factory
   def message_factory do
+    sender = insert(:user)
+    channel = insert(:channel)
+
     %Drip.Chat.Message{
       body: Faker.Lorem.sentence(),
-      sender: build(:user),
-      channel: build(:channel)
+      sender: sender,
+      channel: channel
     }
   end
 
   # Membership factory
   def membership_factory do
+    user = insert(:user)
+    server = insert(:server)
+
     %Drip.Chat.Membership{
-      user: build(:user),
-      server: build(:server)
+      user: user,
+      server: server,
+      user_id: user.id,
+      server_id: server.id
     }
   end
 end

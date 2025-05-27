@@ -8,21 +8,10 @@ defmodule Drip.Chat do
 
   alias Drip.Chat.Message
 
-  @spec get_message!(any()) :: none()
-  @doc """
-  Gets a single message.
+  def get_message!(id) do
+    Repo.get!(Message, id)
+  end
 
-  Raises if the Message does not exist.
-
-  ## Examples
-
-      iex> get_message!(123)
-      %Message{}
-
-  """
-  def get_message!(id), do: raise("TODO")
-
-  @spec get_message!(any()) :: none()
   @doc """
   Creates a message.
 
@@ -49,7 +38,6 @@ defmodule Drip.Chat do
     Repo.preload(messages, [:sender])
   end
 
-  @spec update_message(any(), any()) :: none()
   @doc """
   Updates a message.
 
@@ -63,7 +51,9 @@ defmodule Drip.Chat do
 
   """
   def update_message(%Message{} = message, attrs) do
-    raise "TODO"
+    message
+    |> Message.update_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -79,7 +69,7 @@ defmodule Drip.Chat do
 
   """
   def delete_message(%Message{} = message) do
-    raise "TODO"
+    Repo.delete(message)
   end
 
   @doc """
@@ -91,8 +81,9 @@ defmodule Drip.Chat do
       %Todo{...}
 
   """
-  def change_message(%Message{} = message, _attrs \\ %{}) do
-    raise "TODO"
+  def change_message(%Message{} = message, attrs \\ %{}) do
+    message
+    |> Message.update_changeset(attrs)
   end
 
   alias Drip.Chat.Server
@@ -107,7 +98,7 @@ defmodule Drip.Chat do
 
   """
   def list_servers do
-    raise "TODO"
+    Repo.all(Server)
   end
 
   @doc """
@@ -121,6 +112,10 @@ defmodule Drip.Chat do
       %Server{}
 
   """
+  def get_server!(id) do
+    Repo.get!(Server, id)
+  end
+
   def get_server(id) do
     Repo.get(Server, id)
   end
@@ -167,8 +162,11 @@ defmodule Drip.Chat do
       nil ->
         {:error, :not_found}
 
-      server ->
-        Repo.delete(server)
+      %Server{} = server ->
+        case Repo.delete(server) do
+          {:ok, deleted_server} -> {:ok, deleted_server}
+          {:error, changeset} -> {:error, changeset}
+        end
     end
   end
 
@@ -184,23 +182,9 @@ defmodule Drip.Chat do
   def change_server(%Server{} = server, attrs \\ %{}) do
     server
     |> Server.edit_changeset(attrs)
-    |> Repo.update()
   end
 
   alias Drip.Chat.Membership
-
-  @doc """
-  Returns the list of servers.
-
-  ## Examples
-
-      iex> list_servers()
-      [%Membership{}, ...]
-
-  """
-  def list_servers do
-    raise "TODO"
-  end
 
   @doc """
   Gets a single membership.
@@ -213,7 +197,9 @@ defmodule Drip.Chat do
       %Membership{}
 
   """
-  def get_membership!(id), do: raise("TODO")
+  def get_membership!(id) do
+    Repo.get!(Membership, id)
+  end
 
   @doc """
   Creates a membership.
@@ -233,20 +219,10 @@ defmodule Drip.Chat do
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a membership.
-
-  ## Examples
-
-      iex> update_membership(membership, %{field: new_value})
-      {:ok, %Membership{}}
-
-      iex> update_membership(membership, %{field: bad_value})
-      {:error, ...}
-
-  """
-  def update_membership(%Membership{} = membership, _attrs) do
-    raise "TODO"
+  def update_membership(membership, attrs \\ %{}) do
+    membership
+    |> Membership.create_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -262,7 +238,11 @@ defmodule Drip.Chat do
 
   """
   def delete_membership(%Membership{} = membership) do
-    raise "TODO"
+    Repo.delete(membership)
+  end
+
+  def list_memberships do
+    Repo.all(Membership)
   end
 
   @doc """
@@ -274,24 +254,12 @@ defmodule Drip.Chat do
       %Todo{...}
 
   """
-  def change_membership(%Membership{} = membership, _attrs \\ %{}) do
-    raise "TODO"
+  def change_membership(%Membership{} = membership, attrs \\ %{}) do
+    membership
+    |> Membership.create_changeset(attrs)
   end
 
   alias Drip.Chat.Channel
-
-  @doc """
-  Returns the list of servers.
-
-  ## Examples
-
-      iex> list_servers()
-      [%Channel{}, ...]
-
-  """
-  def list_servers do
-    raise "TODO"
-  end
 
   @doc """
   Gets a single channel.
@@ -304,6 +272,10 @@ defmodule Drip.Chat do
       %Channel{}
 
   """
+  def get_channel!(id) do
+    Repo.get!(Channel, id)
+  end
+
   def get_channel(id) do
     Repo.get(Channel, id)
   end
@@ -320,7 +292,7 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def add_channel(attrs \\ %{}) do
+  def create_channel(attrs \\ %{}) do
     %Channel{}
     |> Channel.create_changeset(attrs)
     |> Repo.insert()
@@ -339,8 +311,10 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def update_channel(%Channel{} = channel, _attrs) do
-    raise "TODO"
+  def update_channel(%Channel{} = channel, attrs) do
+    channel
+    |> Channel.update_changeset(attrs)
+    |> Repo.update()
   end
 
   @doc """
@@ -355,8 +329,8 @@ defmodule Drip.Chat do
       {:error, ...}
 
   """
-  def delete_channel(%Channel{} = _channel) do
-    raise "TODO"
+  def delete_channel(%Channel{} = channel) do
+    Repo.delete(channel)
   end
 
   @doc """
@@ -368,7 +342,11 @@ defmodule Drip.Chat do
       %Todo{...}
 
   """
-  def change_channel(%Channel{} = channel, _attrs \\ %{}) do
-    raise "TODO"
+  def change_channel(%Channel{} = channel, attrs \\ %{}) do
+    Channel.create_changeset(channel, attrs)
+  end
+
+  def list_channels() do
+    Repo.all(Channel)
   end
 end

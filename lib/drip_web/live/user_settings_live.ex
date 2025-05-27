@@ -84,7 +84,7 @@ defmodule DripWeb.UserSettingsLive do
           put_flash(socket, :error, "Email change link is invalid or it has expired.")
       end
 
-    {:ok, push_navigate(socket, to: ~p"/users/settings")}
+    {:ok, push_navigate(socket, to: ~p"/users/settings"), layout: {DripWeb.Layouts, :minimal}}
   end
 
   def mount(_params, _session, socket) do
@@ -133,6 +133,7 @@ defmodule DripWeb.UserSettingsLive do
 
       {:error, changeset} ->
         {:noreply, assign(socket, :email_form, to_form(Map.put(changeset, :action, :insert)))}
+
     end
   end
 

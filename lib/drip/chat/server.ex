@@ -5,9 +5,10 @@ defmodule Drip.Chat.Server do
   schema "servers" do
     field :name, :string
     field :icon_url, :string
-    #field :owner_id, :id
+    # field :owner_id, :id
 
     has_many :channels, Drip.Chat.Channel, foreign_key: :server_id
+    has_many :memberships, Drip.Chat.Membership
 
     belongs_to :owner, Drip.Accounts.User, foreign_key: :owner_id
 
@@ -26,6 +27,4 @@ defmodule Drip.Chat.Server do
     |> cast(attrs, [:name, :icon_url])
     |> validate_required([:name, :icon_url])
   end
-
-
 end
