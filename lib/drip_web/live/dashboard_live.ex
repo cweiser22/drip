@@ -30,12 +30,21 @@ defmodule DripWeb.DashboardLive do
         %Channel{id: 0}
       end
 
+
+    """
     messages =
       if current_channel.id != 0 do
         Chat.load_messages_for_channel(current_channel)
       else
         []
       end
+    """
+
+    messages = %{}
+
+    if current_channel.id != 0 do
+      messages
+    end
 
     if connected?(socket),
       do: switch_channel("", current_channel.id)
