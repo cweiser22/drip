@@ -53,7 +53,7 @@ defmodule Drip.ConversationStateTest do
 
       conversation = Conversation.build_from_messages(messages)
 
-      # Conversation.pretty_print_segments(conversation.segments)
+      Conversation.pretty_print_segments(conversation)
     end
   end
 end

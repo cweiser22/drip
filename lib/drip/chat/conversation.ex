@@ -28,9 +28,14 @@ defmodule Drip.Chat.Segment do
   def add_message_to_group(segment, message) do
     data =
       case segment do
-        {:message_group, data} -> data[:messages] ++ [message]
-        {:divider, _} -> raise ArgumentError, message: "Cannot add message to a divider"
-        _ -> raise ArgumentError, message: "Unknown segment type"
+        {:message_group, data} ->
+          Map.put(data, :messages, fn _ -> {:messages, data.messages ++ [message]} end)
+
+        {:divider, _} ->
+          raise ArgumentError, message: "Cannot add message to a divider"
+
+        _ ->
+          raise ArgumentError, message: "Unknown segment type"
       end
 
     {:message_group, data}
@@ -68,6 +73,15 @@ defmodule Drip.Chat.Conversation do
                   [Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)), new_segment]
               end)
             end
+          else
+            conversation
+            |> Map.update(:segments, [], fn segments ->
+              segments ++
+                [
+                  Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)),
+                  Segment.build_segment(message)
+                ]
+            end)
           end
         else
           # TODO: add time divider then new segment
@@ -85,48 +99,23 @@ defmodule Drip.Chat.Conversation do
     end)
   end
 
-  # TODO: fix missing last segment
-  def segment_messages(raw_messages) do
-    result =
-      Enum.reduce(raw_messages, %{prev: nil, segments: [], current_segment: nil}, fn m, acc ->
-        acc =
-          if acc.prev != nil do
-            if NaiveDateTime.to_date(m.inserted_at) != NaiveDateTime.to_date(acc.prev.inserted_at) do
-              acc
-              |> Map.update(:segments, [], fn segments -> segments ++ [acc.current_segment] end)
-              |> Map.put(:current_segment, build_segment(m))
-            else
-              if m.sender.id == acc.prev.sender.id do
-                acc |> Map.put(:current_segment, add_message_to_segment(acc.current_segment, m))
-              else
-                acc
-                |> Map.update(:segments, [], fn segments -> segments ++ [acc.current_segment] end)
-                |> Map.put(:current_segment, build_segment(m))
-              end
-            end
-          else
-            acc
-            |> Map.update(:segments, [], fn segments ->
-              add_time_divider(segments, m.inserted_at)
-            end)
-            |> Map.put(:current_segment, build_segment(m))
-          end
-
-        acc |> Map.put(:prev, m)
-      end)
-
-    Map.get(result, :segments) ++ [result.current_segment]
-  end
-
-  def pretty_print_segments(segments) do
-    for s <- segments do
+  def pretty_print_segments(conversation) do
+    for s <- conversation.segments do
       case s do
         {:divider, date} ->
           IO.puts("Divider for #{date}")
 
         {:message_group, %{sender: sender, messages: messages}} ->
-          IO.puts("#{length(messages)} sent by #{sender.email}")
-          nil
+          IO.inspect(messages)
+
+          if is_list(messages) do
+            IO.puts("#{length(messages)} sent by #{sender.email}")
+          else
+            IO.puts("Warning: X is not a list of messages")
+          end
+
+        _ ->
+          raise ArgumentError, message: "Invalid segment type"
       end
     end
   end
