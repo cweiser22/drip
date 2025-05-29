@@ -53,49 +53,9 @@ defmodule Drip.Chat.Conversation do
     conversation = %__MODULE__{}
 
     Enum.reduce(raw_messages, conversation, fn message, conversation ->
-      conversation =
-        if Map.get(conversation, :last_message, nil) != nil do
-          if NaiveDateTime.to_date(message.inserted_at) ==
-               NaiveDateTime.to_date(conversation.last_message.inserted_at) do
-            if message.sender.id == conversation.last_message.sender.id do
-              # TODO: fix duplicated segment
-              conversation
-              |> Map.update(:segments, [], fn segments ->
-                segments ++ [Segment.add_message_to_group(Enum.at(segments, -1), message)]
-              end)
-            else
-              # TODO: put message in new segment and add
-              new_segment = Segment.build_segment(message)
-
-              conversation
-              |> Map.update(:segments, [], fn segments ->
-                segments ++
-                  [Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)), new_segment]
-              end)
-            end
-          else
-            conversation
-            |> Map.update(:segments, [], fn segments ->
-              segments ++
-                [
-                  Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)),
-                  Segment.build_segment(message)
-                ]
-            end)
-          end
-        else
-          # TODO: add time divider then new segment
-          conversation
-          |> Map.update(:segments, [], fn segments ->
-            segments ++
-              [
-                Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)),
-                Segment.build_segment(message)
-              ]
-          end)
-        end
-
-      conversation |> Map.put(:last_message, message)
+      conversation
+      |> new_message(message)
+      |> Map.put(:last_message, message)
     end)
   end
 
