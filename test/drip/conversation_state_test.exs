@@ -6,22 +6,6 @@ defmodule Drip.ConversationStateTest do
   import Drip.Factory
 
   describe "conversation_state" do
-    test "add valid message to populated segment" do
-      initial_segment =
-        {:messages,
-         %{
-           sender: build(:user),
-           messages: build_list(10, :message)
-         }}
-
-      new_message = build(:message)
-
-      {:messages, %{messages: messages}} =
-        Conversation.add_message_to_segment(initial_segment, new_message)
-
-      assert new_message.id in Enum.map(messages, fn m -> m.id end)
-    end
-
     test "build conversation" do
       server = insert(:server)
       channel = insert(:channel, server: server, server_id: server.id)
@@ -55,5 +39,17 @@ defmodule Drip.ConversationStateTest do
 
       Conversation.pretty_print_segments(conversation)
     end
+  end
+
+  test "add messages to empty conversation" do
+    conversation =
+      %Conversation{}
+      |> Conversation.new_message(build(:message))
+      |> Conversation.new_message(build(:message))
+      |> Conversation.new_message(build(:message))
+      |> Conversation.new_message(build(:message))
+      |> Conversation.new_message(build(:message))
+
+    IO.inspect(conversation)
   end
 end

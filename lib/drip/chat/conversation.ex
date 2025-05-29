@@ -29,7 +29,7 @@ defmodule Drip.Chat.Segment do
     data =
       case segment do
         {:message_group, data} ->
-          Map.put(data, :messages, fn _ -> {:messages, data.messages ++ [message]} end)
+          Map.update(data, :messages, [message], fn messages -> data.messages ++ [message] end)
 
         {:divider, _} ->
           raise ArgumentError, message: "Cannot add message to a divider"
@@ -99,6 +99,52 @@ defmodule Drip.Chat.Conversation do
     end)
   end
 
+  def new_message(conversation, message) do
+    conversation =
+      if Map.get(conversation, :last_message, nil) != nil do
+        if NaiveDateTime.to_date(message.inserted_at) ==
+             NaiveDateTime.to_date(conversation.last_message.inserted_at) do
+          if message.sender.id == conversation.last_message.sender.id do
+            # TODO: fix duplicated segment
+            conversation
+            |> Map.update(:segments, [], fn segments ->
+              segments ++ [Segment.add_message_to_group(Enum.at(segments, -1), message)]
+            end)
+          else
+            # TODO: put message in new segment and add
+            new_segment = Segment.build_segment(message)
+
+            conversation
+            |> Map.update(:segments, [], fn segments ->
+              segments ++
+                [Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)), new_segment]
+            end)
+          end
+        else
+          conversation
+          |> Map.update(:segments, [], fn segments ->
+            segments ++
+              [
+                Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)),
+                Segment.build_segment(message)
+              ]
+          end)
+        end
+      else
+        # TODO: add time divider then new segment
+        conversation
+        |> Map.update(:segments, [], fn segments ->
+          segments ++
+            [
+              Segment.build_segment(NaiveDateTime.to_date(message.inserted_at)),
+              Segment.build_segment(message)
+            ]
+        end)
+      end
+
+    conversation |> Map.put(:last_message, message)
+  end
+
   def pretty_print_segments(conversation) do
     for s <- conversation.segments do
       case s do
@@ -106,13 +152,7 @@ defmodule Drip.Chat.Conversation do
           IO.puts("Divider for #{date}")
 
         {:message_group, %{sender: sender, messages: messages}} ->
-          IO.inspect(messages)
-
-          if is_list(messages) do
-            IO.puts("#{length(messages)} sent by #{sender.email}")
-          else
-            IO.puts("Warning: X is not a list of messages")
-          end
+          IO.puts("#{length(messages)} sent by #{sender.email}")
 
         _ ->
           raise ArgumentError, message: "Invalid segment type"
