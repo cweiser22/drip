@@ -2,14 +2,10 @@ defmodule Drip.ConversationStateTest do
   use Drip.DataCase
 
   alias Drip.Chat
-  alias Drip.Chat.ConversationState
+  alias Drip.Chat.Conversation
   import Drip.Factory
 
   describe "conversation_state" do
-    test "make time divider with valid date" do
-      assert {:divider, date} = ConversationState.build_time_divider(NaiveDateTime.utc_now())
-    end
-
     test "add valid message to populated segment" do
       initial_segment =
         {:messages,
@@ -21,7 +17,7 @@ defmodule Drip.ConversationStateTest do
       new_message = build(:message)
 
       {:messages, %{messages: messages}} =
-        ConversationState.add_message_to_segment(initial_segment, new_message)
+        Conversation.add_message_to_segment(initial_segment, new_message)
 
       assert new_message.id in Enum.map(messages, fn m -> m.id end)
     end
@@ -29,6 +25,8 @@ defmodule Drip.ConversationStateTest do
     test "build conversation" do
       server = insert(:server)
       channel = insert(:channel, server: server, server_id: server.id)
+
+      users = for _ <- 1..3, do: insert(:user)
 
       now = NaiveDateTime.utc_now()
 
@@ -44,6 +42,7 @@ defmodule Drip.ConversationStateTest do
       for _ <- 1..50 do
         insert(:message,
           channel: channel,
+          sender: Enum.random(users),
           inserted_at: get_fake_datetime.()
         )
       end
@@ -52,9 +51,9 @@ defmodule Drip.ConversationStateTest do
 
       assert length(messages) == 50
 
-      segmented_messages = ConversationState.segment_messages(messages)
-      IO.inspect(segmented_messages)
-      IO.puts(segmented_messages)
+      conversation = Conversation.build_from_messages(messages)
+
+      # Conversation.pretty_print_segments(conversation.segments)
     end
   end
 end
