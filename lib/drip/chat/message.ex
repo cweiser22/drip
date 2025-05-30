@@ -24,4 +24,6 @@ defmodule Drip.Chat.Message do
     |> cast(attrs, [:body])
     |> validate_required([:body])
   end
+
+  @type t :: %__MODULE__{}
 end

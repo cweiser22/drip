@@ -1,4 +1,5 @@
 defmodule DripWeb.DashboardLive do
+  alias Drip.Chat.Conversation
   alias Drip.Chat
   alias Drip.Chat.Server
   alias Drip.Chat.Channel
@@ -30,12 +31,25 @@ defmodule DripWeb.DashboardLive do
         %Channel{id: 0}
       end
 
+    conversations = %{
+      current_channel.id =>
+        Conversation.build_from_messages(Chat.load_messages_for_channel(current_channel))
+    }
+
+    """
     messages =
       if current_channel.id != 0 do
         Chat.load_messages_for_channel(current_channel)
       else
         []
       end
+    """
+
+    messages = %{}
+
+    if current_channel.id != 0 do
+      messages
+    end
 
     if connected?(socket),
       do: switch_channel("", current_channel.id)
@@ -46,13 +60,25 @@ defmodule DripWeb.DashboardLive do
        servers: servers,
        current_server: current_server,
        current_channel: current_channel,
+       conversations: conversations,
        messages: messages,
-       show_new_server_modal: false
+       show_new_server_modal: false,
+       form: to_form(Message.create_changeset(%Message{}, %{}))
      )}
   end
 
   def handle_info({:receive_message, message}, socket) do
-    {:noreply, update(socket, :messages, fn messages -> messages ++ [message] end)}
+    conversations =
+      socket.assigns.conversations
+      |> Map.put(
+        socket.assigns.current_channel.id,
+        Conversation.new_message(
+          socket.assigns.conversations[socket.assigns.current_channel.id],
+          message
+        )
+      )
+
+    {:noreply, assign(socket, conversations: conversations)}
   end
 
   def handle_info({:send_message, %{"body" => body}}, socket) do
@@ -68,6 +94,8 @@ defmodule DripWeb.DashboardLive do
       message = Repo.preload(message, [:sender])
       Phoenix.PubSub.broadcast(Drip.PubSub, "channel:#{channel_id}", {:receive_message, message})
     end
+
+    IO.puts("resetting form input")
 
     {:noreply,
      assign(socket, :form, to_form(%Message{} |> Message.create_changeset(%{body: ""})))}
@@ -89,11 +117,16 @@ defmodule DripWeb.DashboardLive do
 
     messages = Chat.load_messages_for_channel(current_channel)
 
+    conversations =
+      socket.assigns.conversations
+      |> Map.put(current_channel.id, Conversation.build_from_messages(messages))
+
     {:noreply,
      assign(socket,
        current_server: current_server,
        current_channel: current_channel,
-       messages: messages
+       messages: messages,
+       conversations: conversations
      )}
   end
 
@@ -103,9 +136,19 @@ defmodule DripWeb.DashboardLive do
     current_channel = Chat.get_channel(channel_id)
     messages = Chat.load_messages_for_channel(current_channel)
 
+    conversations =
+      socket.assigns.conversations
+      |> Map.put(current_channel.id, Conversation.build_from_messages(messages))
+
     Phoenix.PubSub.subscribe(Drip.PubSub, "channel:#{current_channel.id}")
     switch_channel(old_channel.id, current_channel.id)
-    {:noreply, assign(socket, current_channel: current_channel, messages: messages)}
+
+    {:noreply,
+     assign(socket,
+       current_channel: current_channel,
+       messages: messages,
+       conversations: conversations
+     )}
   end
 
   def handle_event("open_modal", %{"value" => ""}, socket) do
@@ -127,7 +170,7 @@ defmodule DripWeb.DashboardLive do
           <div class="flex flex-col justify-center p-4 border-b font-bold h-14 border-b font-bold bg-gray-800">
             <h4 class="text-sm">#{@current_channel.name}</h4>
           </div>
-
+          
     <!-- scrollable messages list -->
           <div
             phx-hook="ScrollToBottom"
@@ -138,17 +181,18 @@ defmodule DripWeb.DashboardLive do
               module={DripWeb.Components.Conversation}
               current_user={@current_user}
               id="conversation"
+              conversation={Map.get(@conversations, @current_channel.id)}
               messages={@messages}
             />
           </div>
-
+          
     <!-- new message form -->
           <div class="dark:bg-gray-800 bg-gray-800">
             <.live_component
               messages={@messages}
               user={@user}
               current_channel={@current_channel}
-              form={to_form(Message.create_changeset(%Message{}, %{}))}
+              form={@form}
               id="new-message-input"
               module={DripWeb.Components.NewMessage}
             >

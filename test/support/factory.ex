@@ -35,13 +35,17 @@ defmodule Drip.Factory do
 
   # Message factory
   def message_factory do
+    now = NaiveDateTime.utc_now()
     sender = insert(:user)
     channel = insert(:channel)
 
     %Drip.Chat.Message{
+      id: sequence(:message_id, & &1),
       body: Faker.Lorem.sentence(),
       sender: sender,
-      channel: channel
+      channel: channel,
+      inserted_at: now,
+      updated_at: now
     }
   end
 

@@ -15,10 +15,10 @@ defmodule Drip.Accounts.User do
     has_many :memberships, Drip.Chat.Membership
     has_many :joined_servers, through: [:memberships, :server]
 
-
-
     timestamps(type: :utc_datetime)
   end
+
+  @type t :: %__MODULE__{}
 
   @doc """
   A user changeset for registration.

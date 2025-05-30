@@ -7,6 +7,8 @@ defmodule DripWeb.Components.NewMessage do
   def handle_event("send_message", %{"message" => message}, socket) do
     send(self(), {:send_message, message})
 
+    IO.puts("send message activated in")
+
     {:noreply,
      assign(socket, :form, to_form(%Message{} |> Message.create_changeset(%{body: ""})))}
   end

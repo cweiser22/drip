@@ -14,6 +14,26 @@
       "env": {
         "MIX_ENV": "dev"
       }
+    },
+    {
+      "type": "mix_task",
+      "name": "Test",
+      "request": "launch",
+      "task": "test",
+      "taskArgs": [
+        "--trace"
+      ],
+      "startApps": true,
+      "projectDir": "${workspaceRoot}",
+      "exitAfterTaskReturns": true,
+      "requireFiles": [
+        "test/test_helper.exs",
+        "test/support/**/*.ex",
+        "test/**/*_test.exs"
+      ],
+      "env": {
+        "MIX_ENV": "test"
+      }
     }
   ]
 }
