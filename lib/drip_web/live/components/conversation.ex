@@ -28,16 +28,10 @@ defmodule DripWeb.Components.Conversation do
           {@data.sender.email}
         </h4>
         <%= for message <- @data.messages do %>
-          <h3 class="mb-1">{message.body}</h3>
+          <h3 class="mb-1 w-80 whitespace-normal break-words">{message.body}</h3>
         <% end %>
       </div>
     </div>
-    """
-  end
-
-  def message(assigns) do
-    ~H"""
-    <h3>{@message.body}</h3>
     """
   end
 

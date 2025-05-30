@@ -73,7 +73,7 @@ defmodule Drip.Chat.Conversation do
           else
             # TODO: put message in new segment and add
             new_segment = Segment.build_segment(message)
-
+            
             conversation
             |> Map.update(:segments, [], fn segments ->
               segments ++

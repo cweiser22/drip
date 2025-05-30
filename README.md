@@ -1,18 +1,28 @@
 # Drip
 
-To start your Phoenix server:
+**Drip** is a real-time chat application built with [Phoenix](https://www.phoenixframework.org/) and Elixir.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+🚧 **This project is still under active development. Expect incomplete features, potential bugs, and unrefined code.**  
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+---
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Getting Started
 
-## Learn more
+### Prerequisites
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+Ensure you have the following installed:
+
+- Elixir ~> 1.14
+- Erlang/OTP ~> 25
+- PostgreSQL
+- Node.js (for asset building)
+
+### Setup
+
+Clone the repo and set up the project:
+
+```bash
+git clone https://github.com/cweiser22/drip.git
+cd drip
+mix deps.get
+cd assets && npm install && cd ..

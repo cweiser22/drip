@@ -62,21 +62,23 @@ defmodule DripWeb.DashboardLive do
        current_channel: current_channel,
        conversations: conversations,
        messages: messages,
-       show_new_server_modal: false
+       show_new_server_modal: false,
+       form: to_form(Message.create_changeset(%Message{}, %{}))
      )}
   end
 
   def handle_info({:receive_message, message}, socket) do
     conversations =
       socket.assigns.conversations
-      |> Map.update(socket.assigns.current_channel.id, [], fn _ ->
+      |> Map.put(
+        socket.assigns.current_channel.id,
         Conversation.new_message(
           socket.assigns.conversations[socket.assigns.current_channel.id],
           message
         )
-      end)
+      )
 
-    {:noreply, update(socket, conversations, fn _ -> conversations end)}
+    {:noreply, assign(socket, conversations: conversations)}
   end
 
   def handle_info({:send_message, %{"body" => body}}, socket) do
@@ -92,6 +94,8 @@ defmodule DripWeb.DashboardLive do
       message = Repo.preload(message, [:sender])
       Phoenix.PubSub.broadcast(Drip.PubSub, "channel:#{channel_id}", {:receive_message, message})
     end
+
+    IO.puts("resetting form input")
 
     {:noreply,
      assign(socket, :form, to_form(%Message{} |> Message.create_changeset(%{body: ""})))}
@@ -188,7 +192,7 @@ defmodule DripWeb.DashboardLive do
               messages={@messages}
               user={@user}
               current_channel={@current_channel}
-              form={to_form(Message.create_changeset(%Message{}, %{}))}
+              form={@form}
               id="new-message-input"
               module={DripWeb.Components.NewMessage}
             >
